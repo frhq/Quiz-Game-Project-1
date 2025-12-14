@@ -364,9 +364,188 @@ public static void viewMarks(){
 
              } while(choice!=4);   
         }
-             public static void startQuiz() {}
-             public static void viewScores() {}
-             public static void viewLeaderboard() {}
-          
+             public static void startQuiz() {
+            System.out.println("Enter your name: ");
+            String playerName = sc.nextLine();
+   
+            System.out.println("\nSelect Subject: ");
+            System.out.println("1. Biology"); 
+            System.out.println("2. Chemistry");
+            System.out.println("3. Physics");
+            System.out.println("4. English");
+            System.out.println("5. Logical Reasoning");
+            System.out.println("Enter your choice: ");
 
-    }
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            String filename = "";
+            String subjectName = " " ;
+           
+            switch(choice){
+              case 1 : filename = "Biology.txt" ; subjectName  = "Biology" ;break;
+              case 2 : filename = "Chemistry.txt"; subjectName = "Chemistry" ; break ;
+              case 3 : filename = "Physics.txt" ; subjectName = "Physics" ; break;
+              case 4 : filename = "English.txt" ; subjectName = "English"; break;
+              case 5 : filename = "LogicalReasoning.txt"; subjectName = "Logical Reasoning" ; break;
+              default: System.out.println("Invalid subject!");
+              return;
+            }
+
+            int score = 0;
+            int total = 20;
+
+            try {
+              BufferedReader br = new BufferedReader(new FileReader(filename));
+              String line;
+              int qNo = 1;
+
+              while((line = br.readLine()) != null && qNo <= 20) {
+                String [] q = line.split(",");
+        
+                System.out.println("\nQ:" + qNo + "." + q[0]);
+                System.out.println("A. " + q[1]);
+                System.out.println("B. " + q[2]);
+                System.out.println("C. " + q[3]);
+                System.out.println("D. " + q[4]);
+
+                System.out.print("Your answer: ");
+                String userAns = sc.nextLine().toUpperCase();
+
+                if(userAns.equals(q[5])){
+                  score++;
+                }
+                qNo++;
+              }
+              br.close();
+            }catch(IOException e){
+              System.out.println("Error reading questions!");
+              return;
+            }
+
+            double percentage = ((double)score / total) * 100;
+            double gpa; 
+            String grade;
+            String status;
+
+            if (percentage >= 85){
+              gpa = 4.0;
+              grade = "A";
+              status = "PASS";
+            }else if(percentage >= 70){
+              gpa = 3.0;
+              grade = "B";
+              status = "PASS";
+            }else if(percentage >= 50){
+              gpa = 2.0;
+              grade = "C";
+              status = "PASS";
+            }else{
+              gpa = 0.0;
+              grade = "F";
+              status = "FAIL";
+            }
+
+            //DISPLAY RESULT
+            System.out.println("\n=====RESULT=====");
+            System.out.println("Player: " + playerName);
+            System.out.println("Subject: " + subjectName);
+            System.out.println("Score:" + score + "/" + total);
+            System.out.println("Percentage: " + percentage + "%");
+            System.out.println("GPA: " + gpa);
+            System.out.println("Grade: " + grade);
+            System.out.println("Status: " + status);
+
+            try{
+              FileWriter fw = new FileWriter("Marks.txt", true);
+              fw.write("Player: " + playerName + " | Subject: " + subjectName + " | Obtained: "
+                 + score + " | Total: " + total + " | Grade: " + grade + " | GPA: " + gpa + "\n");
+              fw.close();
+            }catch(IOException e){
+              System.out.println("Error saving marks!");
+            }
+          }
+          
+          public static void viewScores(){
+            System.out.println("======ALL PLAYERS SCORES======");
+
+            try{
+              BufferedReader br = new BufferedReader(new FileReader("Marks.txt"));
+              String line;
+
+              if((line = br.readLine()) == null){
+                System.out.println("No scores available yet!");
+              }else{
+                System.out.println(line);
+                while((line = br.readLine()) != null){
+                    System.out.println(line);
+                }
+              }
+              br.close();
+            }catch(FileNotFoundException e){
+              System.out.println("Marks.txt file not found!");
+            }catch(IOException e){
+              System.out.println("Error reading scores file!");
+            }
+          }
+          public static void viewLeaderboard() {
+            System.out.println("===== Leaderboard =====");
+
+            String[] lines = new String[100];
+            int[] scores = new int[100];
+            int count = 0;
+
+            try {
+                BufferedReader br = new BufferedReader(new FileReader("Marks.txt"));
+                String line;
+                while ((line = br.readLine()) != null && count < 100) {
+                    lines[count] = line;
+                    
+                    String[] parts = line.split("Obtained:");
+                    int score = Integer.parseInt(parts[1].split(",")[0].trim());
+                    scores[count] = score;
+                    
+                    count++;
+                }
+                br.close();
+
+                if (count == 0) {
+                    System.out.println("No scores available yet!");
+                    return;
+                }
+
+                for (int i = 0; i < count - 1; i++) {
+                    for (int j = 0; j < count - i - 1; j++) {
+                        if (scores[j] < scores[j + 1]) {
+
+                           int tempScore = scores[j];
+                            scores[j] = scores[j + 1];
+                            scores[j + 1] = tempScore;
+                            
+                            String tempLine = lines[j];
+                            lines[j] = lines[j + 1];
+                            lines[j + 1] = tempLine;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < count; i++) {
+                    System.out.println(lines[i]);
+                }
+
+            } catch (FileNotFoundException e) {
+                System.out.println("Marks.txt file not found!");
+            } catch (IOException e) {
+                System.out.println("Error reading scores file!");
+            }
+        }
+
+
+          //logout
+          public static void Logout(){
+            System.out.println("Logged out successfully!");
+             
+          }
+          
+        }
+            
